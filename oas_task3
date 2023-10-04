@@ -1,0 +1,164 @@
+//ANSHUMAN JHA AUTOMATED TELLER MACHINE INTERFACE
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Scanner;
+
+class UserAccount {
+    private String userId;
+    private int pin;
+    private int balance;
+    private List<String> transactionHistory;
+
+    public UserAccount(String userId, int pin, int initialBalance) {
+        this.userId = userId;
+        this.pin = pin;
+        this.balance = initialBalance;
+        this.transactionHistory = new ArrayList<>();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public int getPin() {
+        return pin;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public List<String> getTransactionHistory() {
+        return transactionHistory;
+    }
+
+    public void deposit(int amount) {
+        balance += amount;
+        transactionHistory.add("Deposited: " + amount);
+    }
+
+    public boolean withdraw(int amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            transactionHistory.add("Withdrawn: " + amount);
+            return true;
+        } else {
+            transactionHistory.add("Withdrawal failed. Insufficient Balance.");
+            return false;
+        }
+    }
+
+    public void transfer(UserAccount recipient, int amount) {
+        if (withdraw(amount)) {
+            recipient.deposit(amount);
+            transactionHistory.add("Transferred " + amount + " to " + recipient.getUserId());
+        } else {
+            transactionHistory.add("Transfer to " + recipient.getUserId() + " failed. Insufficient Balance.");
+        }
+    }
+}
+
+public class ATMExample {
+    public static void main(String[] args) {
+        Map<String, UserAccount> userAccounts = new HashMap<>();
+        userAccounts.put("Anshumanuser123", new UserAccount("user123", 1234, 100000));
+        userAccounts.put("user456", new UserAccount("user456", 5678, 50000));
+
+        Scanner sc = new Scanner(System.in);
+        boolean isRunning = true;
+
+        System.out.print("Enter User ID: ");
+        String userId = sc.nextLine();
+        System.out.print("Enter PIN: ");
+        int pin = sc.nextInt();
+
+        UserAccount user = userAccounts.get(userId);
+        if (user != null && user.getPin() == pin) {
+            System.out.println("Welcome, " + userId + "!");
+
+            while (isRunning) {
+                System.out.println("Automated Teller Machine");
+                System.out.println("Choose 1 for Transaction History");
+                System.out.println("Choose 2 for Withdraw");
+                System.out.println("Choose 3 for Deposit");
+                System.out.println("Choose 4 for Transfer");
+                System.out.println("Choose 5 for Quit");
+                System.out.print("Choose the operation you want to perform:");
+
+                int choice = sc.nextInt();
+                switch (choice) {
+                    case 1:
+                        displayTransactionHistory(user);
+                        break;
+
+                    case 2:
+                        performWithdrawal(user, sc);
+                        break;
+
+                    case 3:
+                        performDeposit(user, sc);
+                        break;
+
+                    case 4:
+                        performTransfer(user, userAccounts, sc);
+                        break;
+
+                    case 5:
+                        isRunning = false; // Set the flag to exit the loop
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice. Please select a valid option.");
+                }
+                System.out.println("Your Balance: " + user.getBalance());
+            }
+            System.out.println("Thank you for using Anshuman's ATM. Have a nice day!");
+        } else {
+            System.out.println("Invalid User ID or PIN. Access denied.");
+        }
+    }
+
+    private static void displayTransactionHistory(UserAccount user) {
+        List<String> transactions = user.getTransactionHistory();
+        if (transactions.isEmpty()) {
+            System.out.println("Transaction History is empty.");
+        } else {
+            System.out.println("Transaction History:");
+            for (String transaction : transactions) {
+                System.out.println(transaction);
+            }
+        }
+    }
+
+    private static void performWithdrawal(UserAccount user, Scanner sc) {
+        System.out.print("Enter money to be withdrawn: ");
+        int withdraw = sc.nextInt();
+        if (user.withdraw(withdraw)) {
+            System.out.println("Please collect your money");
+        } else {
+            System.out.println("Insufficient Balance");
+        }
+    }
+
+    private static void performDeposit(UserAccount user, Scanner sc) {
+        System.out.print("Enter money to be deposited: ");
+        int deposit = sc.nextInt();
+        user.deposit(deposit);
+        System.out.println("Your money has been successfully deposited");
+    }
+
+    private static void performTransfer(UserAccount user, Map<String, UserAccount> userAccounts, Scanner sc) {
+        System.out.print("Enter recipient's User ID : ");
+        String recipientUserId = sc.next();
+        UserAccount recipient = userAccounts.get(recipientUserId);
+        if (recipient != null) {
+            System.out.print("Enter amount to transfer: ");
+            int amount = sc.nextInt();
+            user.transfer(recipient, amount);
+        } else {
+            System.out.println("Recipient not found. Transfer failed.");
+        }
+    }
+}
