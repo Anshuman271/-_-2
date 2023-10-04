@@ -1,0 +1,214 @@
+//ANSHUMAN JHA ONLINE RESERVATION SYSTEM CODE 
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+class User {
+    private String username;
+    private String password;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+}
+
+class Reservation {
+    private int pnr;
+    private String name;
+    private String trainNumber;
+    private String trainName;
+    private String classType;
+    private String dateOfJourney;
+    private String fromPlace;
+    private String toDestination;
+
+    public Reservation(int pnr, String name, String trainNumber, String trainName, String classType, String dateOfJourney, String fromPlace, String toDestination) {
+        this.pnr = pnr;
+        this.name = name;
+        this.trainNumber = trainNumber;
+        this.trainName = trainName;
+        this.classType = classType;
+        this.dateOfJourney = dateOfJourney;
+        this.fromPlace = fromPlace;
+        this.toDestination = toDestination;
+    }
+
+    public int getPNR() {
+        return pnr;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTrainNumber() {
+        return trainNumber;
+    }
+
+    public String getTrainName() {
+        return trainName;
+    }
+
+    public String getClassType() {
+        return classType;
+    }
+
+    public String getDateOfJourney() {
+        return dateOfJourney;
+    }
+
+    public String getFromPlace() {
+        return fromPlace;
+    }
+
+    public String getToDestination() {
+        return toDestination;
+    }
+}
+
+class ReservationSystem {
+    private List<Reservation> reservations = new ArrayList<>();
+    private int nextPNR = 1;
+
+    public Reservation makeReservation(String name, String classType, String dateOfJourney, String fromPlace, String toDestination) {
+        // In a real system, you may retrieve train details based on user input.
+        String trainNumber = "12345";
+        String trainName = "Sample Train";
+
+        Reservation reservation = new Reservation(nextPNR++, name, trainNumber, trainName, classType, dateOfJourney, fromPlace, toDestination);
+        reservations.add(reservation);
+        return reservation;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public Reservation getReservationByPNR(int pnr) {
+        for (Reservation reservation : reservations) {
+            if (reservation.getPNR() == pnr) {
+                return reservation;
+            }
+        }
+        return null;
+    }
+
+    public boolean cancelReservation(int pnr) {
+        Reservation reservation = getReservationByPNR(pnr);
+        if (reservation != null) {
+            reservations.remove(reservation);
+            return true;
+        }
+        return false;
+    }
+}
+
+public class ReservationSystemUI {
+    private ReservationSystem reservationSystem = new ReservationSystem();
+    private Map<String, String> users = new HashMap<>();
+
+    public ReservationSystemUI() {
+        // Add some sample users
+        users.put("Anshumanuser1", "password1");
+        users.put("Anshumanuser2", "password2");
+    }
+
+    public boolean login() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        if (users.containsKey(username) && users.get(username).equals(password)) {
+            return true;
+        } else {
+            System.out.println("Invalid username or password. Please try again.");
+            return false;
+        }
+    }
+
+    public void start() {
+        Scanner scanner = new Scanner(System.in);
+
+        if (!login()) {
+            return;
+        }
+
+        while (true) {
+            System.out.println("1. Make a reservation");
+            System.out.println("2. View all reservations");
+            System.out.println("3. Cancel a reservation");
+            System.out.println("4. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Class Type: ");
+                    String classType = scanner.nextLine();
+                    System.out.print("Date of Journey: ");
+                    String dateOfJourney = scanner.nextLine();
+                    System.out.print("From (Place): ");
+                    String fromPlace = scanner.nextLine();
+                    System.out.print("To (Destination): ");
+                    String toDestination = scanner.nextLine();
+
+                    Reservation reservation = reservationSystem.makeReservation(name, classType, dateOfJourney, fromPlace, toDestination);
+                    System.out.println("Reservation made with PNR " + reservation.getPNR());
+                    break;
+                case 2:
+                    System.out.println("Reservations:");
+                    for (Reservation r : reservationSystem.getReservations()) {
+                        System.out.println("PNR: " + r.getPNR());
+                        System.out.println("Name: " + r.getName());
+                        System.out.println("Train Number: " + r.getTrainNumber());
+                        System.out.println("Train Name: " + r.getTrainName());
+                        System.out.println("Class Type: " + r.getClassType());
+                        System.out.println("Date of Journey: " + r.getDateOfJourney());
+                        System.out.println("From (Place): " + r.getFromPlace());
+                        System.out.println("To (Destination): " + r.getToDestination());
+                        System.out.println();
+                    }
+                    break;
+                case 3:
+                    System.out.print("Reservation PNR to cancel: ");
+                    int pnr = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (reservationSystem.cancelReservation(pnr)) {
+                        System.out.println("Reservation with PNR " + pnr + " canceled");
+                    } else {
+                        System.out.println("Reservation not found for PNR " + pnr);
+                    }
+                    break;
+                case 4:
+                    System.out.println("Thanks for using Anshuman's Online Reservation System");
+                    return;
+                default:
+                    System.out.println("Invalid choice");
+            }
+
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        ReservationSystemUI obj = new ReservationSystemUI();
+        obj.start();
+    }
+}
