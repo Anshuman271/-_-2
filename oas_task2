@@ -1,0 +1,43 @@
+//ANSHUMAN JHA NUMBER GUESSING GAME CODE 
+import java.util.Scanner;
+
+public class NumberGuessingGame {
+
+    public static void main(String[] args) {
+        guessingNumberGame();
+    }
+
+    public static void guessingNumberGame() {
+        Scanner sc = new Scanner(System.in);
+        int number = 1 + (int) (100 * Math.random());
+        int maxAttempts = 7;
+        int attempts = 0;
+        int guess;
+
+        System.out.println("Anshuman welcome's you to the Number Guessing Game!");
+        System.out.println("A number between 1 and 100 has been chosen.");
+        System.out.println("You have " + maxAttempts + " attempts to guess the number.");
+
+        while (attempts < maxAttempts) {
+            System.out.print("Enter your guess: ");
+            guess = sc.nextInt();
+            attempts++;
+
+            if (guess == number) {
+                System.out.println("Congratulations! You guessed the number in " + attempts + " attempts.");
+                break;
+            } else if (guess < number) {
+                System.out.println("The number is greater than " + guess);
+            } else {
+                System.out.println("The number is less than " + guess);
+            }
+
+            if (attempts == maxAttempts) {
+                System.out.println("Oh Shit you have exhausted all " + maxAttempts + " attempts.");
+                System.out.println("The number was " + number);
+            }
+        }
+
+        sc.close();
+    }
+}
